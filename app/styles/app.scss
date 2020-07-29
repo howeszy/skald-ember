@@ -40,12 +40,6 @@
 @import "node_modules/materialize-css/sass/components/datepicker";
 @import "node_modules/materialize-css/sass/components/timepicker";
 
-#document-viewport {
-  margin-left: 201px;
-  width: calc(100vw - 200px);
-  height: 800px;
-}
-
 #element-navigation {
   margin-top: $navbar-height;
   height: 100vh;
@@ -55,4 +49,17 @@
   left: 0;
   overflow-x: hidden;
   width: 200px;
+}
+
+#document-viewport {
+  margin-left: 201px;
+  width: calc(100vw - 200px);
+  height: 800px;
+  position: relative;
+}
+
+.field {
+  position: absolute;
+  touch-action: none;
+  background-color: red;
 }

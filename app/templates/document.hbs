@@ -16,6 +16,9 @@
 <div id="element-navigation" class="open z-depth-2">
 
 </div>
-<div id="document-viewport">
 
+<div id="document-viewport">
+  {{#each this.fields as |field|}}
+    <BasicField @field={{field}} />
+  {{/each}}
 </div>

@@ -7,8 +7,10 @@ export default class DocumentController extends Controller {
 
   fields = [
     {
-      height: 10,
-      width: 200,
+      height: 2,
+      width: 5,
+      top: 0,
+      left: 0,
       value: 'this is a field'
     }
   ];
