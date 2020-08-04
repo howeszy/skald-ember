@@ -13,12 +13,6 @@
   </div>
 </nav>
 
-<div id="element-navigation" class="open z-depth-2">
-
-</div>
-
-<div id="document-viewport">
-  {{#each this.fields as |field|}}
-    <BasicField @field={{field}} />
-  {{/each}}
-</div>
+<DocumentViewport @height="2200"
+                  @width="1700",
+                  @src="/assets/images/testform.png"/>

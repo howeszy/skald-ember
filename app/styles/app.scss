@@ -40,11 +40,29 @@
 @import "node_modules/materialize-css/sass/components/datepicker";
 @import "node_modules/materialize-css/sass/components/timepicker";
 
+@import 'mixins/scrollbar';
+
+ /* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+} 
+
+#header-navigation {
+  position: relative;
+  z-index: 19;
+}
+
 #element-navigation {
-  margin-top: $navbar-height;
-  height: 100vh;
+  padding-top: $navbar-height;
+  height: calc(100vh);
   position: fixed;
-  z-index: 999;
+  z-index: 18;
   top: 0;
   left: 0;
   overflow-x: hidden;
@@ -52,10 +70,17 @@
 }
 
 #document-viewport {
+  @include scrollbars(20px, $primary-color);
   margin-left: 201px;
   width: calc(100vw - 200px);
-  height: 800px;
-  position: relative;
+  height: calc(100vh - #{$navbar-height});
+  overflow: scroll;
+  
+  .document {
+    width: 100%;
+    position: relative;
+    background-size: 100%;
+  }
 }
 
 .field {

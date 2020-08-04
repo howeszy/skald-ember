@@ -1,0 +1,12 @@
+<div id="element-navigation" class="open z-depth-2">
+    <button {{on 'click' (fn this.setView 100)}}>test</button>
+    <button {{on 'click' (fn this.setView 'fitWidth')}}>test</button>
+</div>
+
+<div id="document-viewport" {{did-insert this.setup this}}>
+  <div class="document" style={{this.style}}>
+    {{#each this.fields as |field|}}
+      <BasicField @field={{field}} />
+    {{/each}}
+  </div>
+</div>
