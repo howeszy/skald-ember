@@ -8,28 +8,52 @@ import interact from 'interactjs';
 export default class BasicFieldComponent extends Component {
   @tracked height = 1;
   @tracked width = 1;
-  @tracked top = 0;
-  @tracked left = 0;
+  @tracked x = 0;
+  @tracked y = 0;
   @tracked value = "";
 
+  get containerWidth() {
+    return this.args.containerWidth;
+  }
+
+  get containerHeight() {
+    return this.args.containerHeight;
+  }
+
   get style() {
-    return htmlSafe(`left: ${this.left}%; top: ${this.top}%; height: ${this.height}%; width: ${this.width}%`);
+    return htmlSafe(`left: ${this.x}%; top: ${this.y}%; height: ${this.height}%; width: ${this.width}%`);
   }
 
   constructor(owner, args) {
     super(...arguments);
 
-    let { height, width, top, left, value } = args.field;
+    let { x, y, width, height, value } = args.field;
 
-    this.height = height;
+    this.x = x;
+    this.y = y;
     this.width = width;
-    this.top = top;
-    this.left = left;
+    this.height = height;
     this.value = value;
   }
 
-  interact(element, [parent]) {
+  setup(element, [parent]) {
     interact(element)
+      .resizable({
+        margin: 3,
+        edges: { left:true, right: true, top: true, bottom: true },
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: 'parent'
+          }),
+
+          interact.modifiers.restrictSize({
+            min: { width: 5, height: 5 }
+          })
+        ],
+        listeners: {
+          move: bind(parent, parent.resizeListener)
+        }
+      })
       .draggable({
         modifiers: [
           interact.modifiers.restrictRect({
@@ -39,22 +63,34 @@ export default class BasicFieldComponent extends Component {
         ],
         autoscroll: true,
         listeners: {
-          move: bind(parent, parent.dragMoveListener)
+          move: bind(parent, parent.dragListener)
         }
       });
   }
 
-  dragMoveListener(event) {
-    const target = event.target;
-    // keep the dragged position in the data-x/data-y attributes
-    const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-    const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+  movePx(x,y) {
+    this.x = (x / this.containerWidth) * 100;
+    this.y = (y / this.containerHeight) * 100;
+  }
 
-    // translate the element
-    target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  resizePx(width, height) {
+    this.width = (width / this.containerWidth) * 100
+    this.height = (height / this.containerHeight) * 100
+  }
 
-    // update the posiion attributes
-    target.setAttribute('data-x', x);
-    target.setAttribute('data-y', y);
+  dragListener(event) {
+    const x = (this.containerWidth * (this.x/100)) + event.dx;
+    const y = (this.containerHeight * (this.y/100)) + event.dy;
+    this.movePx(x,y);
+  }
+
+  resizeListener(event) {
+    const x = (this.containerWidth * (this.x / 100)) + event.deltaRect.left;
+    const y = (this.containerHeight * (this.y / 100)) + event.deltaRect.top;
+    const width = event.rect.width;
+    const height = event.rect.height;
+
+    this.movePx(x, y);
+    this.resizePx(width, height);
   }
 }

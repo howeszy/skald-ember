@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import M from 'materialize-css';
 import { tracked } from '@glimmer/tracking';
 import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object' 
@@ -6,11 +7,11 @@ import { action } from '@ember/object'
 export default class DocumentViewportComponent extends Component {
     @tracked fields = [
         {
+            value: 'this is a field',
             height: 2,
             width: 5,
-            top: 0,
-            left: 0,
-            value: 'this is a field'
+            x: 0,
+            y: 0
         }
     ];
     @tracked view = 'fitWidth';
@@ -24,6 +25,8 @@ export default class DocumentViewportComponent extends Component {
 
     get scaledWidth() {
         const { view, viewportWidth, documentWidth } = this;
+
+        console.log(this.view)
 
         if (view && !isNaN(view)) {
             return (view/100) * documentWidth;
@@ -48,15 +51,22 @@ export default class DocumentViewportComponent extends Component {
         this.documentSrc = args.src;
     }
 
-    @action
-    setView(view) {
-        this.view = view;
-    }
-
-    @action 
     setViewport(viewport) {
         this.viewport = viewport;
         this.resizeViewport();
+    }
+    
+    resizeViewport() {
+        if (!this.viewport) {
+            return;
+        }
+
+        this.viewportHeight = this.viewport.clientHeight;
+        this.viewportWidth = this.viewport.clientWidth;
+    }
+
+    select(elem) {
+       M.FormSelect.init(elem);
     }
 
     @action
@@ -65,12 +75,9 @@ export default class DocumentViewportComponent extends Component {
     }
 
     @action
-    resizeViewport() {
-        if (!this.viewport) {
-            return;
-        }
+    setView(event) {
+        const target = event.target;
 
-        this.viewportHeight = this.viewport.clientHeight;
-        this.viewportWidth = this.viewport.clientWidth;
+        this.view = target.options[target.selectedIndex].value;
     }
 }
