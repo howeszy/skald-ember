@@ -4,6 +4,8 @@
 @import "node_modules/materialize-css/sass/components/color-variables";
 @import "node_modules/materialize-css/sass/components/color-classes";
 
+// Variable Overrides
+$primary-color: color("blue", "lighten-2") !default;
 // Variables;
 @import "node_modules/materialize-css/sass/components/variables";
 
@@ -41,6 +43,7 @@
 @import "node_modules/materialize-css/sass/components/timepicker";
 
 @import 'mixins/scrollbar';
+
 
  /* Hide scrollbar for Chrome, Safari and Opera */
 html::-webkit-scrollbar {
@@ -86,5 +89,22 @@ html {
 .field {
   position: absolute;
   touch-action: none;
-  background-color: red;
 }
+
+$signer-colors: 
+  0 "blue", 
+  1 "red", 
+  2 "yellow", 
+  3 "green", 
+  4 "purple", 
+  5 "orange", 
+  6 "teal", 
+  7 "pink";
+
+@each $order, $color in $signer-colors  {
+  .signer-#{$order} {
+    border: 1px solid color($color, "base");
+    background-color: #{color($color, "lighten-3")}44;
+  }
+}
+

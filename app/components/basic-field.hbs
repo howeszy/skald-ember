@@ -1,5 +1,5 @@
-<div {{did-insert this.setup this}}
-     class="field"
-     style={{style}}>
-
+<div data-field="{{@field.id}}" {{did-insert (fn this.setup this this.viewport)}}
+     class="field {{this.signerClass}}"
+     style="left: {{@field.x}}%; top: {{@field.y}}%; height: {{@field.height}}%; width: {{@field.width}}%"
+     data-id={{this.id}}>
 </div>
