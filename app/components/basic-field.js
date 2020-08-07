@@ -12,7 +12,7 @@ export default class BasicFieldComponent extends Component {
   }
 
   get signerClass() {
-    return `signer-${get(this.args.field, 'signer.order')}`;
+    return `signer-${this.args.field.order}`;
   }
 
   get onSetup() {
@@ -20,6 +20,7 @@ export default class BasicFieldComponent extends Component {
   }
 
   setup(component, viewport, element) {
+    debugger
     run(bind(viewport, component.onSetup, component.field.id, element));
   }
 }

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export default class Field {
+    id;
     guid;
     x;
     y;
@@ -11,9 +12,10 @@ export default class Field {
     order;
 
     constructor(args) {
-        const { x, y, height, width, value, type, order } = args;
+        const { id, x, y, height, width, value, type, order } = args;
 
         this.guid = uuidv4();
+        this.id = id;
         this.x = x;
         this.y = y;
         this.height = height;

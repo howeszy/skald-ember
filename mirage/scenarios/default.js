@@ -1,5 +1,5 @@
 export default function(server) {
-  let document =server.create('document', {
+  let document = server.create('document', {
     src: '/assets/images/testform.png',
     height: 2200,
     width: 1700

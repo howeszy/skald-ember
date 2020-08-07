@@ -1,4 +1,5 @@
 export default function() {
+  this.get('/documents')
   this.get('/documents/:id')
 
   // These comments are here to help you get started. Feel free to delete them.
