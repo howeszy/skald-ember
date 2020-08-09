@@ -37,10 +37,13 @@ export default class DocumentBackgroundComponent extends Component {
     }
 
     get style() {
+        const { zoom, document } = this.args;
+        const { width, height, src } = document;
+
         return htmlSafe(`
-            height: ${this.args.height}px;
-            width: ${this.args.width}px;
-            background-image: url(${this.args.src})
+            width: ${width * zoom}px;
+            height: ${height * zoom}px;
+            background-image: url(${src})
         `);
     }
 

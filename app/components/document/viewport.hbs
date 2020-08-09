@@ -1,15 +1,8 @@
-<div id="document-viewport" {{did-insert this.setupViewport this}}>
-  <Document::Background @editable={{true}}
-                        @adding={{this.adding}}
-                        @height={{this.scaledHeight}}
-                        @width={{this.scaledWidth}}
-                        @src={{@document.src}} 
-                        @onTransform={{this.transform}}
-                        @onCommit={{this.onCommit}}>
-    {{#each this.fields as |field|}}
-      <Document::InteractiveField @field={{field}}
-                                  @onMove={{this.movePx}}
-                                  @onResize={{this.resizePx}}/>
-    {{/each}}
-  </Document::Background>
+<div id="document-viewport" {{did-insert this.element}}>
+    <Document::Background @editable={{true}}
+                          @adding={{this.adding}}
+                          @zoom={{this.zoom}}
+                          @document={{@document}}>
+        {{yield}}
+    </Document::Background>
 </div>

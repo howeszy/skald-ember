@@ -55,6 +55,7 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
     }
 
     resizeListener(event) {
+        debugger
         this.args.onMove(this.args.field.guid, event.dx, event.dy);
         this.args.onResize(this.args.field.guid, event.rect.width, event.rect.height);
     }
