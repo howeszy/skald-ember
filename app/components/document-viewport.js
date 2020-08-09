@@ -10,15 +10,23 @@ export default class DocumentViewportComponent extends Component {
     @tracked view = 'fitWidth';
     @tracked viewportHeight;
     @tracked viewportWidth;
-    @tracked cachedFields;
+    
+    @tracked fields;
+    @tracked signers;
+    
+    @tracked adding = false;
 
+    newField;
     viewport;
 
     constructor(owner, args) {
         super(owner, args);
 
         get(this.args.document, 'fields').then((fields) => {
-            this.cachedFields = fields.toArray();
+            this.fields = fields.toArray();
+        })
+        get(this.args.document, 'signers').then((signers) => {
+            this.signers = signers.toArray();
         })
     }
 
@@ -64,30 +72,43 @@ export default class DocumentViewportComponent extends Component {
     }
 
     findFieldIndex(guid) {
-        return this.cachedFields.findIndex((field) => field.guid == guid);
+        return this.fields.findIndex((field) => field.guid == guid);
     }
 
     @action
     movePx(guid, x, y) {
         const index = this.findFieldIndex(guid);
-        let field = this.cachedFields[index]
+        let field = this.fields[index]
 
         // convert from percentage to pixels, add the change, convert back to percentage
         field.x = (((this.scaledWidth * (field.x/100)) + x) / this.scaledWidth) * 100
         field.y = (((this.scaledHeight * (field.y/100)) + y) / this.scaledHeight) * 100
 
-        this.cachedFields[index] = field;
+        this.fields[index] = field;
     }
 
     @action
     resizePx(guid, width, height) {
         const index = this.findFieldIndex(guid);
-        let field = this.cachedFields[index]
+        let field = this.fields[index]
 
         field.width = (width / this.scaledWidth) * 100
         field.height = (height / this.scaledHeight) * 100
 
-        this.cachedFields[index] = field;
+        this.fields[index] = field;
+    }
+
+    @action
+    transform(x, y, width, height) {
+        this.newField = { x, y, width, height }
+    }
+
+    @action
+    commit() {
+        let record = this.store.createRecord('field', {
+            ...this.newField,
+            document: this.args.document0
+        })
     }
 
     @action
@@ -98,20 +119,8 @@ export default class DocumentViewportComponent extends Component {
     }
 
     @action
-    addField(event) {
-        let cachedFields = this.cachedFields;
-
-        cachedFields.push(
-            this.store.createRecord('field', {
-                document: this.args.document,
-                signer: this.args.document.signers.toArray()[0],
-                x: (event.layerX / this.scaledWidth) * 100,
-                y: (event.layerY / this.scaledHeight) * 100,
-                height: 2,
-                width: 5
-            })
-        );
-
-        this.cachedFields = cachedFields;
+    toggleAdding() {
+        this.adding = !this.adding;
+        this.newField = undefined;
     }
 }

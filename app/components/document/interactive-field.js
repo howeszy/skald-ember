@@ -1,11 +1,21 @@
 import Component from '@glimmer/component';
 import interact from 'interactjs';
 import { bind } from '@ember/runloop';
+import { htmlSafe } from '@ember/template';
 
 
 export default class DocumentInteractiveFieldBaseComponent extends Component {
     get type() {
         return this.args.field.type || 'single-line';
+    }
+
+    get style() {
+        return htmlSafe(`
+            left: ${this.args.field.x}%;
+            top: ${this.args.field.y}%;
+            height: ${this.args.field.height}%;
+            width: ${this.args.field.width}%
+        `);
     }
 
     setup(element, [component]) {

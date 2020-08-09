@@ -1,9 +1,10 @@
 <div {{did-insert this.setup this}}
      class="field signer-{{@field.order}}"
-     style="left: {{@field.x}}%;
-            top: {{@field.y}}%;
-            height: {{@field.height}}%;
-            width: {{@field.width}}%"
-     data-guid={{@field.guid}}>
+     style="{{this.style}}"
+     data-guid="{{@field.guid}}"
+     data-x="{{this.args.field.x}}"
+     data-y="{{this.args.field.y}}"
+     data-width="{{this.args.field.width}}"
+     data-height="{{this.args.field.height}}">
     {{component (concat 'document/interactive-fields/' this.type) value=@field.value}}
 </div>

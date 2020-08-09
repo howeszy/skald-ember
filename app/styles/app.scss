@@ -83,6 +83,18 @@ html {
     width: 100%;
     position: relative;
     background-size: 100%;
+
+    .signer-ghost {
+      display: none;
+
+      &.visible {
+        display: block;
+      }
+    }
+
+    &.drawing {
+      cursor: crosshair;
+    }
   }
 }
 

@@ -1,101 +1,122 @@
 import Component from '@glimmer/component';
-import { action, get } from '@ember/object';
+import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 export default class DocumentBackgroundComponent extends Component {
-    @tracked mouseActive = false;
-    @tracked mouseX;
-    @tracked mouseY;
-    @tracked mouseHeight;
-    @tracked mouseWidth;
+    @tracked drawing = false;
+    @tracked drawX;
+    @tracked drawY;
+    @tracked drawHeight;
+    @tracked drawWidth;
 
-    ghostRegex = new RegExp('ghost-mouse-move-handler');
-    documentRegex = new RegExp('document-mouse-move-handler');
+    element;
+    ghostRegex = new RegExp('ghost');
+    documentRegex = new RegExp('document');
+    fieldRegex = new RegExp('field');
 
-    get interactable() {
-        return this.args.interactable || true;
+    get active() {
+        const { element } = this;
+
+        if(!element) {
+            return this.args.adding;
+        }
+        
+        if (this.args.adding) {
+            element.addEventListener('mousemove', this.mousemove)
+            element.addEventListener('mousedown', this.mousedown)
+            element.addEventListener('mouseup', this.mouseup)
+        } else {
+            this.resetDrawing();
+            element.removeEventListener('mousemove', this.mousemove)
+            element.removeEventListener('mousedown', this.mousedown)
+            element.removeEventListener('mouseup', this.mouseup)
+        }
+
+        return this.args.adding;
     }
 
-    get ghostX() {
-        if (this.mouseWidth < 0) {
-            return this.mouseX + this.mouseWidth;
-        }
-        return this.mouseX;
+    get style() {
+        return htmlSafe(`
+            height: ${this.args.height}px;
+            width: ${this.args.width}px;
+            background-image: url(${this.args.src})
+        `);
     }
 
-    get ghostY() {
-        if (this.mouseHeight < 0) {
-            return this.mouseY + this.mouseHeight;
-        }
-        return this.mouseY;
+    get editable() {
+        return this.args.editable || false;
     }
 
-    get ghostWidth() {
-        if (this.mouseWidth < 0) {
-            return -this.mouseWidth;
-        }
-        return this.mouseWidth;
+    resetDrawing() {
+        this.drawing = false;
+        this.drawX = undefined;
+        this.drawY = undefined;
+        this.drawHeight = undefined;
+        this.drawWidth = undefined;
     }
 
-    get ghostHeight() {
-        if (this.mouseHeight < 0) {
-            return -this.mouseHeight;
+    @action
+    commit() {
+        if (this.args.onCommit) {
+            this.args.onCommit();
         }
-        return this.mouseHeight;
+    }
+
+    @action
+    setElement(element) {
+        this.element = element;
     }
 
     @action
     mousedown(event) {
-        if (this.interactable && event.button != 0 || this.mouseActive) {
+        if (!this.editable || event.button != 0 || this.drawing) {
             return;
         }
 
-        this.mouseActive = true;
-        this.mouseX = event.layerX;
-        this.mouseY = event.layerY;
-        this.mouseWidth = 0;
-        this.mouseHeight = 0;
+        this.drawing = true;
+        this.drawX = event.layerX;
+        this.drawY = event.layerY;
+        this.drawWidth = 0;
+        this.drawHeight = 0;
     }
 
     @action
     mouseup() {
-        if (this.interactable && !this.mouseActive) {
-             return;
+        if (!this.editable || !this.drawing) {
+            return;
         }
 
-        this.mouseActive = false;
-        this.mouseX = undefined;
-        this.mouseY = undefined;
-        this.mouseHeight = undefined;
-        this.mouseWidth = undefined;
+        this.resetDrawing();
+        this.commit();
     }
 
     @action
     mousemove(event) {
-        if (!this.interactable) {
+        if (!this.editable) {
             return;
         }
 
-        if (this.mouseActive && event.buttons == 1) {
+        if (this.drawing && event.buttons == 1) {
             if (this.documentRegex.test(event.target.className)) {
-                this.mouseWidth = event.layerX - this.mouseX;
-                this.mouseHeight = event.layerY - this.mouseY;
+                this.drawWidth = event.layerX - this.drawX;
+                this.drawHeight = event.layerY - this.drawY;
             } else if (this.ghostRegex.test(event.target.className)) { // TODO: Account for negative sizing down
-                if (this.mouseWidth >= 0) {
-                    this.mouseWidth = this.mouseWidth - (this.mouseWidth - event.layerX);
+                if (this.drawWidth >= 0) {
+                    this.drawWidth = this.drawWidth - (this.drawWidth - event.layerX);
                 } else {
-                    this.mouseWidth = this.mouseWidth + event.layerX;
+                    this.drawWidth = this.drawWidth + event.layerX;
                 }
 
-                if (this.mouseHeight >= 0) {
-                    this.mouseHeight = this.mouseHeight - (this.mouseHeight - event.layerY);
+                if (this.drawHeight >= 0) {
+                    this.drawHeight = this.drawHeight - (this.drawHeight - event.layerY);
                 } else {
-                    this.mouseHeight = this.mouseHeight + event.layerY;
+                    this.drawHeight = this.drawHeight + event.layerY;
                 }
                 
             }
-        } else if(this.mouseActive) {
-            this.mouseup();
+        } else if(this.drawing) {
+            this.resetDrawing();
         }
     }
 }
