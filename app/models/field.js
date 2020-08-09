@@ -1,35 +1,27 @@
+import Model, { attr, belongsTo } from '@ember-data/model';
 import { v4 as uuidv4 } from 'uuid';
 
-export default class Field {
-    id;
+export default class FieldModel extends Model {
+    @attr name;
+    @attr x;
+    @attr y;
+    @attr height;
+    @attr width;
+    @attr value;
+    @attr type;
+
     guid;
-    x;
-    y;
-    height;
-    width;
-    value;
-    type;
-    order;
-
-    constructor(args) {
-        const { id, x, y, height, width, value, type, order } = args;
-
-        this.guid = uuidv4();
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.height = height;
-        this.width = width;
-        this.value = value;
-        this.type = type;
-        this.order = (order || 0);
-    }
 
     get order() {
-        if ( !this.signer ) {
-            return null;
-        }
-
-        return this.signer.order
+        return this.signer.get('order');
     }
+
+    constructor(args) {
+        super(args)
+
+        this.guid = uuidv4();
+    }
+
+    @belongsTo('document') document;
+    @belongsTo('signer') signer;
 }

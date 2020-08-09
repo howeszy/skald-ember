@@ -108,3 +108,7 @@ $signer-colors:
   }
 }
 
+.signer-ghost {
+  border: 1px solid color("blue-grey", "base");
+  background-color: #{color("blue-grey", "lighten-3")}44;
+}

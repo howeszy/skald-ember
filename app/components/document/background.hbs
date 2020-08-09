@@ -1,0 +1,13 @@
+<div class="document document-mouse-move-handler"
+     style="height: {{@height}}px; width: {{@width}}px; background-image: url({{@src}})"
+     {{on "mousedown" this.mousedown}}
+     {{on "mouseup" this.mouseup}}
+     {{on "mousemove" this.mousemove}}>
+     <div class="field signer-ghost ghost-mouse-move-handler" 
+          style="display: {{if this.mouseActive 'relative' 'none'}};
+                 left: {{this.ghostX}}px;
+                 top: {{this.ghostY}}px;
+                 height: {{this.ghostHeight}}px;
+                 width: {{this.ghostWidth}}px" />
+    {{yield}}
+</div>

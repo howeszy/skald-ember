@@ -11,12 +11,13 @@
 </div>
 
 <div id="document-viewport" {{did-insert this.setupViewport this}}>
-  <div class="document"
-       style="height: {{this.scaledHeight}}px; width: {{this.scaledWidth}}px; background-image: url({{@document.src}})">
-    {{#each @document.fields as |field|}}
-      <BasicField @field={{field}}
-                  @viewport={{this}}
-                  @onSetup={{this.setupField}}/>
+  <Document::Background @height={{this.scaledHeight}}
+                        @width={{this.scaledWidth}}
+                        @src={{@document.src}}>
+    {{#each this.cachedFields as |field|}}
+      <Document::InteractiveField @field={{field}}
+                                  @onMove={{this.movePx}}
+                                  @onResize={{this.resizePx}}/>
     {{/each}}
-  </div>
+  </Document::Background>
 </div>

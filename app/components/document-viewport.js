@@ -1,9 +1,7 @@
 import Component from '@glimmer/component';
 import M from 'materialize-css';
 import { tracked } from '@glimmer/tracking';
-import { action, set } from '@ember/object';
-import { run, bind } from '@ember/runloop';
-import interact from 'interactjs';
+import { action, get } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default class DocumentViewportComponent extends Component {
@@ -12,8 +10,17 @@ export default class DocumentViewportComponent extends Component {
     @tracked view = 'fitWidth';
     @tracked viewportHeight;
     @tracked viewportWidth;
+    @tracked cachedFields;
 
     viewport;
+
+    constructor(owner, args) {
+        super(owner, args);
+
+        get(this.args.document, 'fields').then((fields) => {
+            this.cachedFields = fields.toArray();
+        })
+    }
 
     get document() {
         return this.args.document;
@@ -56,63 +63,31 @@ export default class DocumentViewportComponent extends Component {
         parent.setViewport(element)
     }
 
-    setupField(id, element) {
-        interact(element).resizable({ //make sure the field is real
-            margin: 3,
-            edges: { left:true, right: true, top: true, bottom: true },
-            modifiers: [
-                interact.modifiers.restrictEdges({
-                    outer: 'parent'
-                }),
-
-                interact.modifiers.restrictSize({
-                    min: { width: 5, height: 5 }
-                })
-            ],
-            listeners: {
-                move: bind(this, this.resizeListener, id)
-            }
-        })
-        .draggable({
-            autoscroll: true,
-            modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: 'parent',
-                    endOnly: true
-                })
-            ],
-            listeners: {
-                move: bind(this, this.moveListener, id)
-            }
-        });
+    findFieldIndex(guid) {
+        return this.cachedFields.findIndex((field) => field.guid == guid);
     }
 
-    movePx(field, x, y) {
+    @action
+    movePx(guid, x, y) {
+        const index = this.findFieldIndex(guid);
+        let field = this.cachedFields[index]
+
         // convert from percentage to pixels, add the change, convert back to percentage
-        set(field, 'x', (((this.scaledWidth * (field.x/100)) + x) / this.scaledWidth) * 100);
-        set(field, 'y', (((this.scaledHeight * (field.y/100)) + y) / this.scaledHeight) * 100);
+        field.x = (((this.scaledWidth * (field.x/100)) + x) / this.scaledWidth) * 100
+        field.y = (((this.scaledHeight * (field.y/100)) + y) / this.scaledHeight) * 100
+
+        this.cachedFields[index] = field;
     }
 
-    resizePx(field, width, height) {
-        set(field, 'width', (width / this.scaledWidth) * 100);
-        set(field, 'height', (height / this.scaledHeight) * 100);
-    }
+    @action
+    resizePx(guid, width, height) {
+        const index = this.findFieldIndex(guid);
+        let field = this.cachedFields[index]
 
-    moveListener(id, event) {
-        debugger
-        this.store.findRecord('field', id)
-            .then((field) => {
-                this.movePx(field, event.dx, event.dy);
-            });
-    }
+        field.width = (width / this.scaledWidth) * 100
+        field.height = (height / this.scaledHeight) * 100
 
-    resizeListener(id, event) {
-        this.fields.find((field) => {
-            field.id === id;
-        }).then((field) => {
-            this.movePx(field, event.deltaRect.left, event.deltaRect.top);
-            this.resizePx(field, event.rect.width, event.rect.height);
-        });
+        this.cachedFields[index] = field;
     }
 
     @action
@@ -120,5 +95,23 @@ export default class DocumentViewportComponent extends Component {
         const target = event.target;
 
         this.view = target.options[target.selectedIndex].value;
+    }
+
+    @action
+    addField(event) {
+        let cachedFields = this.cachedFields;
+
+        cachedFields.push(
+            this.store.createRecord('field', {
+                document: this.args.document,
+                signer: this.args.document.signers.toArray()[0],
+                x: (event.layerX / this.scaledWidth) * 100,
+                y: (event.layerY / this.scaledHeight) * 100,
+                height: 2,
+                width: 5
+            })
+        );
+
+        this.cachedFields = cachedFields;
     }
 }
