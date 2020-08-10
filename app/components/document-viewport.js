@@ -7,17 +7,10 @@ import { inject as service } from '@ember/service';
 export default class DocumentViewportComponent extends Component {
     @service store;
 
-    @tracked view = 'fitWidth';
-    @tracked viewportHeight;
-    @tracked viewportWidth;
-    
+    @tracked view = 'fit';
     @tracked fields;
     @tracked signers;
-    
-    @tracked adding = false;
-
-    newField;
-    viewport;
+    @tracked isAdding = false;
 
     constructor(owner, args) {
         super(owner, args);
@@ -30,85 +23,46 @@ export default class DocumentViewportComponent extends Component {
         })
     }
 
-    get document() {
-        return this.args.document;
-    }
-
-    get scaledWidth() {
-        const { view, viewportWidth } = this;
-        const documentWidth = this.args.document.width;
-
-        if (view && !isNaN(view)) {
-            return (view/100) * documentWidth;
-        } else {
-            return viewportWidth;
-        }
-    }
-
-    get scaledHeight() {
-        return (this.args.document.height * this.scaledWidth) / this.args.document.width;
-    }
-
-    setViewport(viewport) {
-        this.viewport = viewport;
-        this.resizeViewport();
-    }
-    
-    resizeViewport() {
-        if (!this.viewport) {
-            return;
-        }
-
-        this.viewportHeight = this.viewport.clientHeight;
-        this.viewportWidth = this.viewport.clientWidth;
-    }
-
     setupSelect(elem) {
        M.FormSelect.init(elem);
     }
 
-    setupViewport(element, [parent]) {
-        parent.setViewport(element)
+    addField() {
+        let fields = this.fields
+
+        let newRecord = this.store.createRecord('field', { document: this.args.document, signer: this.signers[0]});
+        newRecord.pending = true;
+        fields.push(newRecord);
+
+        this.fields = fields;
     }
 
-    findFieldIndex(guid) {
-        return this.fields.findIndex((field) => field.guid == guid);
+    commitFields() {
+        this.fields.filter((field) => field.pending)
+                   .forEach((field) => field.pending = false);
+    }
+
+    cleanFields() {
+        const nonPendingFields = this.fields.filter((field) => !field.pending);
+        
+        // Unload pending fields
+        this.fields.filter((field) => field.pending)
+                   .forEach((field) => field.rollbackAttributes());
+
+        console.log(nonPendingFields.length)
+        this.fields = nonPendingFields;
     }
 
     @action
-    movePx(guid, x, y) {
-        const index = this.findFieldIndex(guid);
-        let field = this.fields[index]
+    transform(field, x, y, width, height) {
+        const index = this.fields.findIndex((f) => f.guid == field.guid);
 
-        // convert from percentage to pixels, add the change, convert back to percentage
-        field.x = (((this.scaledWidth * (field.x/100)) + x) / this.scaledWidth) * 100
-        field.y = (((this.scaledHeight * (field.y/100)) + y) / this.scaledHeight) * 100
+        field.x = x;
+        field.y = y;
+        field.width = width;
+        field.height = height;
 
         this.fields[index] = field;
-    }
-
-    @action
-    resizePx(guid, width, height) {
-        const index = this.findFieldIndex(guid);
-        let field = this.fields[index]
-
-        field.width = (width / this.scaledWidth) * 100
-        field.height = (height / this.scaledHeight) * 100
-
-        this.fields[index] = field;
-    }
-
-    @action
-    transform(x, y, width, height) {
-        this.newField = { x, y, width, height }
-    }
-
-    @action
-    commit() {
-        let record = this.store.createRecord('field', {
-            ...this.newField,
-            document: this.args.document0
-        })
     }
 
     @action
@@ -119,8 +73,13 @@ export default class DocumentViewportComponent extends Component {
     }
 
     @action
-    toggleAdding() {
-        this.adding = !this.adding;
-        this.newField = undefined;
+    toggleIsAdding() {
+        if (this.isAdding) {
+            this.cleanFields();
+            this.isAdding = false;
+        } else {
+            this.addField();
+            this.isAdding = true;
+        }
     }
 }

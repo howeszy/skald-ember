@@ -1,0 +1,19 @@
+<div class="document {{if this.isActive 'drawing'}}"
+     style="{{this.style}}"
+     {{did-insert this.setElement}}>
+
+    {{#each this.fields as |field|}}
+        {{#if field.pending}}
+            <Document::GhostField @x={{this.drawX}}
+                                  @y={{this.drawY}}
+                                  @width={{this.drawWidth}}
+                                  @height={{this.drawHeight}}
+                                  @field={{field}}
+                                  @isActive={{this.isDrawing}}
+                                  @onTransform={{@onTransform}} />
+        {{else}}
+            <Document::InteractiveField @field={{field}}
+                                        @onTransform={{@onTransform}}/>
+        {{/if}}
+    {{/each}}
+</div>

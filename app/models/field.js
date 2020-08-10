@@ -11,14 +11,20 @@ export default class FieldModel extends Model {
     @attr type;
 
     guid;
+    pending;
 
     get order() {
         return this.signer.get('order');
     }
 
+    set pending(bool) {
+        this.pending = bool;
+    }
+
     constructor(args) {
         super(args)
 
+        this.pending = false;
         this.guid = uuidv4();
     }
 

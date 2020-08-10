@@ -51,12 +51,11 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
     }
 
     moveListener(event) {
-        this.args.onMove(this.args.field.guid, event.dx, event.dy);
+        this.args.onTransform(this.args.field, event.dx, event.dy, 0, 0);
     }
 
     resizeListener(event) {
-        debugger
-        this.args.onMove(this.args.field.guid, event.dx, event.dy);
-        this.args.onResize(this.args.field.guid, event.rect.width, event.rect.height);
+        const { left, top, width, height } = event.deltaRect;
+        this.args.onTransform(this.args.field, left, top, width, height);
     }
 }

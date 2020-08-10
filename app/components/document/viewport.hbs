@@ -1,8 +1,7 @@
-<div id="document-viewport" {{did-insert this.element}}>
-    <Document::Background @editable={{true}}
-                          @adding={{this.adding}}
-                          @zoom={{this.zoom}}
-                          @document={{@document}}>
-        {{yield}}
-    </Document::Background>
+<div id="document-viewport" {{did-insert this.setElement}}>
+    <Document::Canvas @zoom={{this.zoom}}
+                      @document={{@document}}
+                      @fields={{@fields}}
+                      @isAdding={{@isAdding}}
+                      @onTransform={{this.transform}} />
 </div>
