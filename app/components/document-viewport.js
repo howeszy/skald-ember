@@ -48,8 +48,7 @@ export default class DocumentViewportComponent extends Component {
         // Unload pending fields
         this.fields.filter((field) => field.pending)
                    .forEach((field) => field.rollbackAttributes());
-
-        console.log(nonPendingFields.length)
+                   
         this.fields = nonPendingFields;
     }
 

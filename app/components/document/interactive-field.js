@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
-import interact from 'interactjs';
-import { bind } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
+import { action } from '@ember/object';
+import interact from 'interactjs';
 
 
 export default class DocumentInteractiveFieldBaseComponent extends Component {
@@ -18,7 +18,8 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
         `);
     }
 
-    setup(element, [component]) {
+    @action
+    setup(element) {
         interact(element)
             .resizable({
                 margin: 3,
@@ -33,7 +34,7 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
                     })
                 ],
                 listeners: {
-                    move: bind(component, component.resizeListener)
+                    move: this.resizeListener
                 }
             })
             .draggable({
@@ -45,15 +46,17 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
                     })
                 ],
                 listeners: {
-                    move: bind(component, component.moveListener)
+                    move: this.moveListener
                 }
             });
     }
 
+    @action
     moveListener(event) {
         this.args.onTransform(this.args.field, event.dx, event.dy, 0, 0);
     }
 
+    @action
     resizeListener(event) {
         const { left, top, width, height } = event.deltaRect;
         this.args.onTransform(this.args.field, left, top, width, height);

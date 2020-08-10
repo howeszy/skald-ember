@@ -2,7 +2,7 @@
      style="{{this.style}}"
      {{did-insert this.setElement}}>
 
-    {{#each this.fields as |field|}}
+    {{#each @fields as |field|}}
         {{#if field.pending}}
             <Document::GhostField @x={{this.drawX}}
                                   @y={{this.drawY}}

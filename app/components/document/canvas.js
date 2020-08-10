@@ -12,11 +12,6 @@ export default class DocumentCanvasComponent extends Component {
 
     domElement;
 
-    get fields() {
-        console.log('infields', this.args.fields)
-        return this.args.fields;
-    }
-
     get isActive() {
         const { domElement } = this; 
 
@@ -106,8 +101,8 @@ export default class DocumentCanvasComponent extends Component {
     @action
     mousemove(event) {
         if (this.isDrawing) {
-            this.drawWidth = this.drawWidth + event.movementY;
-            this.drawHeight = this.drawHeight + event.movementX;
+            this.drawWidth = this.drawWidth + event.movementX;
+            this.drawHeight = this.drawHeight + event.movementY;
         }
     }
 }

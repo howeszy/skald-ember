@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object';
+import { run, bind } from '@ember/runloop';
+
 
 export default class DocumentGhostFieldComponent extends Component {
     previousX = 0;
@@ -37,17 +39,22 @@ export default class DocumentGhostFieldComponent extends Component {
     }
 
     get style() {
-        if (this.x && this.y && this.height && this.width) {
-            this.transform();
-            return htmlSafe(`
-                left: ${this.x}px;
-                top: ${this.y}px;
-                height: ${this.height}px;
-                width: ${this.width}px
-            `);
-        }
+        return htmlSafe(`
+            left: ${this.args.field.x}%;
+            top: ${this.args.field.y}%;
+            height: ${this.args.field.height}%;
+            width: ${this.args.field.width}%
+        `);
+    }
 
-        return htmlSafe('');
+    get transformMarix() {
+        const { x, y, width, height } = this;
+
+        if (x && y && width && height) {
+            this.transform();
+            return true
+        }
+        return false
     }
 
     @action
@@ -57,8 +64,8 @@ export default class DocumentGhostFieldComponent extends Component {
 
         const movementX = previousX - x;
         const movementY = previousY - y;
-        const movementwidth = previousWidth - width;
-        const movementHeight = previousHeight - height;
+        const movementWidth = -(previousWidth - width);
+        const movementHeight = -(previousHeight - height);
 
         this.previousX = x;
         this.previousY = y;
@@ -68,7 +75,7 @@ export default class DocumentGhostFieldComponent extends Component {
         this.args.onTransform(this.args.field, 
                               movementX,
                               movementY,
-                              movementwidth,
+                              movementWidth,
                               movementHeight);
     }
 }
