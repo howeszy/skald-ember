@@ -1,19 +1,25 @@
-<div class="document {{if this.isActive 'drawing'}}"
-     style="{{this.style}}"
-     {{did-insert this.setElement}}>
-
+<div class="document {{if @isAdding 'drawing'}}" style="{{this.style}}" >
     {{#each @fields as |field|}}
-        {{#if field.pending}}
-            <Document::GhostField @x={{this.drawX}}
-                                  @y={{this.drawY}}
-                                  @width={{this.drawWidth}}
-                                  @height={{this.drawHeight}}
-                                  @field={{field}}
-                                  @isActive={{this.isDrawing}}
-                                  @onTransform={{@onTransform}} />
-        {{else}}
+        {{#unless field.pending}}
             <Document::InteractiveField @field={{field}}
                                         @onTransform={{@onTransform}}/>
-        {{/if}}
+        {{/unless}}
     {{/each}}
+
+    {{#if @isAdding}}
+        <div class="new-field-wrapper"
+             {{did-insert this.setWrapper}}
+             {{will-destroy this.unsetWrapper}} >
+            {{# if this.wrapper }}
+                {{#each @fields as |field|}}
+                    {{#if field.pending}}
+                        <Document::GhostField @field={{field}}
+                                              @parent={{this.wrapper}}
+                                              @isActive={{@isAdding}}
+                                              @onTransform={{@onTransform}}/>
+                    {{/if}}
+                {{/each}}
+            {{/if}}
+        </div>
+    {{/if}}
 </div>

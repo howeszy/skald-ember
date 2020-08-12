@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default class FieldModel extends Model {
     @attr name;
-    @attr x;
-    @attr y;
-    @attr height;
-    @attr width;
+    @attr('number', { defaultValue: 0 }) x;
+    @attr('number', { defaultValue: 0 }) y;
+    @attr('number', { defaultValue: 0 }) height;
+    @attr('number', { defaultValue: 0 }) width;
     @attr value;
     @attr type;
 

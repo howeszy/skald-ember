@@ -52,6 +52,11 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
     }
 
     @action
+    teardown(element) {
+        interact(element).unset();
+    }
+
+    @action
     moveListener(event) {
         this.args.onTransform(this.args.field, event.dx, event.dy, 0, 0);
     }

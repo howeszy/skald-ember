@@ -1,41 +1,18 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object';
-import { run, bind } from '@ember/runloop';
-
 
 export default class DocumentGhostFieldComponent extends Component {
-    previousX = 0;
-    previousY = 0;
-    previousWidth = 0;
-    previousHeight = 0;
+    isDrawing = false;
+    pinnedX = 0;
+    pinnedY = 0;
+    x = 0;
+    y = 0;
+    height = 0;
+    width = 0;
 
-    get x() {
-        if (this.args.width < 0) {
-            return this.args.x + this.args.width;
-        }
-        return this.args.x;
-    }
-
-    get y() {
-        if (this.args.height < 0) {
-            return this.args.y + this.args.height;
-        }
-        return this.args.y;
-    }
-
-    get width() {
-        if (this.args.width < 0) {
-            return -this.args.width;
-        }
-        return this.args.width;
-    }
-
-    get height() {
-        if (this.args.height < 0) {
-            return -this.args.height;
-        }
-        return this.args.height;
+    get isActive() {
+        return this.args.isActive;
     }
 
     get style() {
@@ -47,35 +24,94 @@ export default class DocumentGhostFieldComponent extends Component {
         `);
     }
 
-    get transformMarix() {
-        const { x, y, width, height } = this;
-
-        if (x && y && width && height) {
-            this.transform();
-            return true
-        }
-        return false
+    @action
+    setup(element, [parent]) {
+        parent.addEventListener('mousedown', this.mousedown)
+        parent.addEventListener('mousemove', this.mousemove)
     }
 
     @action
-    transform() {
-        const { x, y, width, height } = this;
-        let { previousX, previousY, previousWidth, previousHeight } = this;
+    teardown(element, [parent]) {
+        parent.removeEventListener('mousedown', this.mousedown)
+        parent.removeEventListener('mousemove', this.mousemove)
+    }
 
-        const movementX = previousX - x;
-        const movementY = previousY - y;
-        const movementWidth = -(previousWidth - width);
-        const movementHeight = -(previousHeight - height);
+    @action
+    mousedown(event) {
+        if(this.isDrawing)  {
+            this.isDrawing = false;
+            //commit will go here
+        } else if(event.target == this.args.parent) {
+            this.isDrawing = true;
+            this.x = event.layerX;
+            this.pinnedX = event.layerX;
+            this.y = event.layerY;
+            this.pinnedY = event.layerY;
+            this.args.onTransform(this.args.field, event.layerX, event.layerY, 0, 0);
+        }
+    }
 
-        this.previousX = x;
-        this.previousY = y;
-        this.previousWidth = width;
-        this.previousHeight = height;
+    @action
+    mousemove(event) {
+        console.log('move')
+        if(this.isDrawing) {
+            const { movementX, movementY } = event;
+            let { pinnedX, pinnedY, x, y, width, height } = this;
 
-        this.args.onTransform(this.args.field, 
-                              movementX,
-                              movementY,
-                              movementWidth,
-                              movementHeight);
+            let deltaX = 0;
+            let deltaY = 0;
+            let deltaWidth = movementX;
+            let deltaHeight = 0;
+
+            if (x == pinnedX) {
+                if (width + deltaWidth < 0) {
+                    width = Math.abs(width + deltaWidth);
+                    deltaWidth = Math.abs(deltaHeight) - height;
+                    x = pinnedX - width;
+                } else {
+                    width = width + deltaWidth;
+                }
+            } else {
+                if (x + deltaWidth >= pinnedX) {
+                    width = Math.abs(width - deltaWidth);
+                    deltaWidth = Math.abs(deltaHeight) - height;
+                    x = pinnedX;
+                } else {
+                    width = width - deltaWidth;
+                    deltaX = deltaWidth;
+                }
+            }
+            
+            if (y == pinnedY) {
+                if (height + movementY < 0) {
+                    deltaHeight = Math.abs(height + movementY) - height;
+                    height = Math.abs(height + movementY);
+                    deltaY = -height;
+                    y = pinnedY - height;
+                } else {
+                    deltaHeight = movementY;
+                    height = height + movementY;
+                }
+            } else {
+                if (height - movementY < 0) {
+                    deltaHeight = Math.abs(height - movementY) - height;
+                    height = Math.abs(height - movementY);
+                    deltaY = pinnedY - y;
+                    y = pinnedY;
+                } else {
+                    deltaHeight = -movementY;
+                    height = height - movementY;
+                    deltaY = movementY;
+                    y = y + movementY;
+                }
+            }
+
+            this.x = x;
+            this.y = y,
+            this.height = height;
+            this.width = width;
+
+            this.args.onTransform(this.args.field, deltaX, deltaY, deltaWidth, deltaHeight);
+        }
     }
 }

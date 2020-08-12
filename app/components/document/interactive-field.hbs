@@ -1,10 +1,6 @@
-<div {{did-insert this.setup this}}
-     class="field signer-{{@field.order}}"
+<div class="field signer-{{@field.order}}"
      style="{{this.style}}"
-     data-guid="{{@field.guid}}"
-     data-x="{{this.args.field.x}}"
-     data-y="{{this.args.field.y}}"
-     data-width="{{this.args.field.width}}"
-     data-height="{{this.args.field.height}}">
+     {{did-insert this.setup}}
+     {{will-destroy this.teardown}}>
     {{component (concat 'document/interactive-fields/' this.type) value=@field.value}}
 </div>

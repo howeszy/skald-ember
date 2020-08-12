@@ -84,15 +84,7 @@ html {
     position: relative;
     background-size: 100%;
 
-    .signer-ghost {
-      display: none;
-
-      &.visible {
-        display: block;
-      }
-    }
-
-    &.drawing {
+    .new-field-wrapper {
       cursor: crosshair;
     }
   }

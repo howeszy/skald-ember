@@ -1,3 +1,4 @@
-<div class="field ghost signer-ghost {{if @isActive 'visible'}}"
-     style="{{this.style}}"
-     data-transform="{{this.transformMarix}}"/>
+{{#if this.isActive}}
+     <div class="field ghost signer-ghost"
+          style="{{this.style}}" />
+{{/if}}
