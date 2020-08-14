@@ -1,4 +1,5 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
+import { tracked } from '@glimmer/tracking';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class FieldModel extends Model {
@@ -10,8 +11,8 @@ export default class FieldModel extends Model {
     @attr value;
     @attr type;
 
+    @tracked pending;
     guid;
-    pending;
 
     get order() {
         return this.signer.get('order');

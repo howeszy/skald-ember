@@ -52,6 +52,13 @@ export default class DocumentViewportComponent extends Component {
         this.fields = nonPendingFields;
     }
 
+
+    @action
+    commit() {
+        this.commitFields();
+        this.isAdding = false;
+    }
+
     @action
     transform(field, x, y, width, height) {
         const index = this.fields.findIndex((f) => f.guid == field.guid);

@@ -42,7 +42,7 @@ export default class DocumentGhostFieldComponent extends Component {
     mousedown(event) {
         if(this.isDrawing)  {
             this.isDrawing = false;
-            //commit will go here
+            this.args.onCommit(this.args.field)
         } else if(event.target == this.args.parent) {
             this.isDrawing = true;
             this.ox = event.layerX;
@@ -58,33 +58,55 @@ export default class DocumentGhostFieldComponent extends Component {
         if(this.isDrawing) {
             // previous rect
             const { x, y, height, width, ox, oy } = this
+            
+            // new rect
             let x2;
             let y2;
-            // new rect
             if (event.target == this.args.parent) {
-                x2 = event.layerX >= ox ? ox : event.layerX;
-                y2 = event.layerY >= oy ? oy : event.layerY;
+                x2 = event.layerX;
+                y2 = event.layerY;
             } else if (event.target == this.element) {
                 const layerX = event.target.offsetLeft + event.layerX;
                 const layerY = event.target.offsetTop + event.layerY;
-                x2 = layerX >= ox ? ox : layerX;
-                y2 = layerY >= oy ? oy : layerY;
-            } else {
+                x2 = layerX;
+                y2 = layerY;
+            } else {  // short circuit and return
                 return
             }
-
             const width2 = Math.abs(ox - x2);
             const height2 = Math.abs(oy - y2);
 
-            const dx = x - x2;
-            const dy = y - y2;
-            const dwidth = width2 - width;
-            const dheight = height2 - height;
+            //compare
+            let dx = 0;
+            let dy = 0;
+            let dwidth = width2 - width;
+            let dheight = height2 - height;
 
-            this.x = x2;
-            this.y = y2;
-            this.width = width;
-            this.height = height;
+            if (x <= ox && x2 < ox) {
+                dx = x2 - x;
+            } else if (x > ox && x2 < ox) {
+                dx = ox - x2;
+            } else if (x < ox && x2 >= ox) {
+                dx = ox - x;
+            } else {
+                dx = 0;
+            }
+
+            if (y <= oy && y2 < oy) {
+                dy = y2 - y;
+            } else if (y > oy && y2 < oy) {
+                dy = oy - y2;
+            } else if (y < oy && y2 >= oy) {
+                dy = oy - y;
+            } else {
+                dy = 0;
+            }
+
+            // apply delta
+            this.x = this.x + dx;
+            this.y = this.y + dy;
+            this.width = this.width + dwidth;
+            this.height = this.height + dheight;
 
             this.args.onTransform(this.args.field, dx, dy, dwidth, dheight);
         }
