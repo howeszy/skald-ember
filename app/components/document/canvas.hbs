@@ -10,7 +10,7 @@
         <div class="new-field-wrapper"
              {{did-insert this.setWrapper}}
              {{will-destroy this.unsetWrapper}} >
-            {{# if this.wrapper }}
+            {{#if this.wrapper }}
                 {{#each @fields as |field|}}
                     {{#if field.pending}}
                         <Document::GhostField @field={{field}}

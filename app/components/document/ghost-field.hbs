@@ -1,4 +1,6 @@
 {{#if this.isActive}}
      <div class="field ghost signer-ghost"
-          style="{{this.style}}" />
+          style="{{this.style}}" 
+          {{did-insert this.setup}}
+          {{will-destroy this.teardown}}/>
 {{/if}}

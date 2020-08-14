@@ -4,12 +4,13 @@ import { action } from '@ember/object';
 
 export default class DocumentGhostFieldComponent extends Component {
     isDrawing = false;
-    pinnedX = 0;
-    pinnedY = 0;
+    ox = 0;
+    oy = 0;
     x = 0;
     y = 0;
     height = 0;
     width = 0;
+    element;
 
     get isActive() {
         return this.args.isActive;
@@ -25,15 +26,16 @@ export default class DocumentGhostFieldComponent extends Component {
     }
 
     @action
-    setup(element, [parent]) {
-        parent.addEventListener('mousedown', this.mousedown)
-        parent.addEventListener('mousemove', this.mousemove)
+    setup(element) {
+        this.element = element;
+        this.args.parent.addEventListener('mousedown', this.mousedown)
+        this.args.parent.addEventListener('mousemove', this.mousemove)
     }
 
     @action
-    teardown(element, [parent]) {
-        parent.removeEventListener('mousedown', this.mousedown)
-        parent.removeEventListener('mousemove', this.mousemove)
+    teardown() {
+        this.args.parent.removeEventListener('mousedown', this.mousedown)
+        this.args.parent.removeEventListener('mousemove', this.mousemove)
     }
 
     @action
@@ -43,75 +45,48 @@ export default class DocumentGhostFieldComponent extends Component {
             //commit will go here
         } else if(event.target == this.args.parent) {
             this.isDrawing = true;
+            this.ox = event.layerX;
+            this.oy = event.layerY;
             this.x = event.layerX;
-            this.pinnedX = event.layerX;
             this.y = event.layerY;
-            this.pinnedY = event.layerY;
             this.args.onTransform(this.args.field, event.layerX, event.layerY, 0, 0);
         }
     }
 
     @action
     mousemove(event) {
-        console.log('move')
         if(this.isDrawing) {
-            const { movementX, movementY } = event;
-            let { pinnedX, pinnedY, x, y, width, height } = this;
-
-            let deltaX = 0;
-            let deltaY = 0;
-            let deltaWidth = movementX;
-            let deltaHeight = 0;
-
-            if (x == pinnedX) {
-                if (width + deltaWidth < 0) {
-                    width = Math.abs(width + deltaWidth);
-                    deltaWidth = Math.abs(deltaHeight) - height;
-                    x = pinnedX - width;
-                } else {
-                    width = width + deltaWidth;
-                }
+            // previous rect
+            const { x, y, height, width, ox, oy } = this
+            let x2;
+            let y2;
+            // new rect
+            if (event.target == this.args.parent) {
+                x2 = event.layerX >= ox ? ox : event.layerX;
+                y2 = event.layerY >= oy ? oy : event.layerY;
+            } else if (event.target == this.element) {
+                const layerX = event.target.offsetLeft + event.layerX;
+                const layerY = event.target.offsetTop + event.layerY;
+                x2 = layerX >= ox ? ox : layerX;
+                y2 = layerY >= oy ? oy : layerY;
             } else {
-                if (x + deltaWidth >= pinnedX) {
-                    width = Math.abs(width - deltaWidth);
-                    deltaWidth = Math.abs(deltaHeight) - height;
-                    x = pinnedX;
-                } else {
-                    width = width - deltaWidth;
-                    deltaX = deltaWidth;
-                }
-            }
-            
-            if (y == pinnedY) {
-                if (height + movementY < 0) {
-                    deltaHeight = Math.abs(height + movementY) - height;
-                    height = Math.abs(height + movementY);
-                    deltaY = -height;
-                    y = pinnedY - height;
-                } else {
-                    deltaHeight = movementY;
-                    height = height + movementY;
-                }
-            } else {
-                if (height - movementY < 0) {
-                    deltaHeight = Math.abs(height - movementY) - height;
-                    height = Math.abs(height - movementY);
-                    deltaY = pinnedY - y;
-                    y = pinnedY;
-                } else {
-                    deltaHeight = -movementY;
-                    height = height - movementY;
-                    deltaY = movementY;
-                    y = y + movementY;
-                }
+                return
             }
 
-            this.x = x;
-            this.y = y,
-            this.height = height;
+            const width2 = Math.abs(ox - x2);
+            const height2 = Math.abs(oy - y2);
+
+            const dx = x - x2;
+            const dy = y - y2;
+            const dwidth = width2 - width;
+            const dheight = height2 - height;
+
+            this.x = x2;
+            this.y = y2;
             this.width = width;
+            this.height = height;
 
-            this.args.onTransform(this.args.field, deltaX, deltaY, deltaWidth, deltaHeight);
+            this.args.onTransform(this.args.field, dx, dy, dwidth, dheight);
         }
     }
 }
