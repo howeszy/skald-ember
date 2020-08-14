@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
 import { htmlSafe } from '@ember/template';
+import { tracked } from '@glimmer/tracking';
 
 export default class DocumentCanvasComponent extends Component {
     @tracked wrapper;

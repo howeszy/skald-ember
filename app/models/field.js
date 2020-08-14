@@ -12,6 +12,7 @@ export default class FieldModel extends Model {
     @attr type;
 
     @tracked pending;
+    @tracked focused;
     guid;
 
     get order() {

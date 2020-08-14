@@ -2,6 +2,8 @@
     {{#each @fields as |field|}}
         {{#unless field.pending}}
             <Document::InteractiveField @field={{field}}
+                                        @isActive={{not @isAdding}}
+                                        @onFocus={{@onFocus}}
                                         @onTransform={{@onTransform}}/>
         {{/unless}}
     {{/each}}
@@ -16,6 +18,7 @@
                         <Document::GhostField @field={{field}}
                                               @parent={{this.wrapper}}
                                               @isActive={{@isAdding}}
+                                              @onFocus={{@onFocus}}
                                               @onCommit={{@onCommit}}
                                               @onTransform={{@onTransform}}/>
                     {{/if}}

@@ -93,11 +93,6 @@ html {
   }
 }
 
-.field {
-  position: absolute;
-  touch-action: none;
-}
-
 $signer-colors: 
   0 "blue", 
   1 "red", 
@@ -108,14 +103,23 @@ $signer-colors:
   6 "teal", 
   7 "pink";
 
-@each $order, $color in $signer-colors  {
-  .signer-#{$order} {
-    border: 1px solid color($color, "base");
-    background-color: #{color($color, "lighten-3")}44;
+.field {
+  position: absolute;
+  touch-action: none;
+  border: 1px solid color("blue-grey", "base");
+  background-color: #{color("blue-grey", "lighten-3")}44;
+
+  @each $order, $color in $signer-colors  {
+    &.signer-#{$order} {
+      border: 1px solid color($color, "base");
+      background-color: #{color($color, "lighten-3")}44;
+    }
+  }
+
+  &.focus {
+    border-width: 3px;
   }
 }
 
-.signer-ghost {
-  border: 1px solid color("blue-grey", "base");
-  background-color: #{color("blue-grey", "lighten-3")}44;
-}
+
+

@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import interact from 'interactjs';
 
 
 export default class DocumentInteractiveFieldBaseComponent extends Component {
+    @tracked cursor = 'pointer';
+
     get type() {
         return this.args.field.type || 'single-line';
     }
@@ -49,6 +52,15 @@ export default class DocumentInteractiveFieldBaseComponent extends Component {
                     move: this.moveListener
                 }
             });
+    }
+
+    onmouseenter
+
+    @action
+    onFocus(event) {
+        if (this.args.isActive) {
+            this.args.onFocus(this.args.field);
+        }
     }
 
     @action

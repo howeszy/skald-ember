@@ -40,6 +40,10 @@ export default class DocumentGhostFieldComponent extends Component {
 
     @action
     mousedown(event) {
+        if (event.button != 0) {
+            return
+        }
+
         if(this.isDrawing)  {
             this.isDrawing = false;
             this.args.onCommit(this.args.field)

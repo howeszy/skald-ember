@@ -4,7 +4,7 @@ import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default class DocumentViewportComponent extends Component {
+export default class DocumentEditorComponent extends Component {
     @service store;
 
     @tracked view = 'fit';
@@ -69,6 +69,18 @@ export default class DocumentViewportComponent extends Component {
         field.height = height;
 
         this.fields[index] = field;
+    }
+
+    @action
+    focus(field) {
+        this.fields.forEach((f, i) => {
+            if (f.guid == field.guid) {
+                f.focused = !f.focused
+            } else {
+                f.focused = false
+            }
+            this.fields[i] = f
+        })
     }
 
     @action
