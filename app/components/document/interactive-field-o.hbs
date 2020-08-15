@@ -1,0 +1,7 @@
+<div class="field signer-{{@field.order}} {{if @field.focused 'focus'}}"
+     style="{{this.style}}"
+     {{did-insert this.render}}
+     {{did-update this.rerender}}
+     {{will-destroy this.teardown}}>
+    {{component (concat 'document/interactive-fields/' this.type) value=@field.value}}
+</div>

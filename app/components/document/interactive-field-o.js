@@ -3,6 +3,7 @@ import { htmlSafe } from '@ember/template';
 import { action, computed } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
+
 export default class DocumentInteractiveFieldComponent extends Component {
     @tracked cursor = 'pointer';
     @tracked x = 0;
@@ -165,7 +166,7 @@ export default class DocumentInteractiveFieldComponent extends Component {
     }
 
     @action
-    mousemove() {
+    mousemove(event) {
 
     }
 }
