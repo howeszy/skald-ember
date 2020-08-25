@@ -2,29 +2,90 @@ import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { action, computed } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import {
+    bottomRight,
+    right,
+    bottom,
+    topRight,
+    bottomLeft,
+    body,
+    top,
+    left,
+    topLeft
+} from 'skald/utils/xymargin'
 
 export default class DocumentInteractiveFieldComponent extends Component {
-    @tracked cursor = 'pointer';
-    @tracked x = 0;
-    @tracked y = 0;
-    @tracked width = 0;
-    @tracked height = 0;
-    @tracked ox = 0;
-    @tracked oy = 0;
+    @tracked zone = 'unknown';
+
+    @tracked isDrawing;
+    @tracked x;
+    @tracked y;
+    @tracked width;
+    @tracked height;
+
+    @tracked ox;
+    @tracked oy;
+    @tracked owidth;
+    @tracked oheight;
 
     element;
+    ostate; //state of object before manipulation
+
+    get minWidth() {
+        return this.args.minWidth || 10;
+    }
+
+    get minHeight() {
+        return this.args.minHeight || 10;
+    }
 
     get type() {
         return this.args.field.type || 'single-line';
     }
 
+    get cursor() {
+        if (this.isDrawing) {
+            return 'pointer';
+        }
+
+        switch(this.zone){
+            case 'body':
+                return 'move';
+            case 'bottomRight':
+            case 'topLeft':
+                return 'nwse-resize';
+            case 'right':
+            case 'left':
+                return 'ew-resize';
+            case 'top':
+            case 'bottom':
+                return 'ns-resize';
+            case 'topRight':
+            case 'bottomLeft':
+                return 'nesw-resize';
+            default:
+                return 'pointer';
+        }
+    }
+
     get style() {
-        return htmlSafe(`
-            left: ${this.args.field.x}%;
-            top: ${this.args.field.y}%;
-            height: ${this.args.field.height}%;
-            width: ${this.args.field.width}%
-        `);
+        if (this.x != null && this.y != null  && this.height != null  && this.width != null) {
+            return htmlSafe(`
+                left: ${this.x}px;
+                top: ${this.y}px;
+                height: ${this.height}px;
+                width: ${this.width}px;
+                cursor: ${this.cursor}
+            `);
+        } else {
+            return htmlSafe(`
+                left: ${this.args.field.x}%;
+                top: ${this.args.field.y}%;
+                height: ${this.args.field.height}%;
+                width: ${this.args.field.width}%;
+                cursor: ${this.cursor}
+            `);
+        }
     }
 
     get margin() {
@@ -34,129 +95,94 @@ export default class DocumentInteractiveFieldComponent extends Component {
         return 5;
     }
 
-    // The following matrixes are cached points interest
-    // matrix are defined in order of priotity of event
-    // priority is al follows: bottomRight, [right, bottom], body, [topRight, bottomLeft], [top, left], topLeft
-    // |-----------------------------------|
-    // | 6 |             5             | 4 |
-    // |---+---------------------------+---|
-    // |   |                           |   |
-    // |   |                           |   |
-    // | 5 |             3             | 2 |
-    // |   |                           |   |
-    // |   |                           |   |
-    // |---+---------------------------+---|
-    // | 4 |             2             | 1 |
-    // |-----------------------------------|
-    //
-    //matrix values should alway run left -> right, top -> bottom
-
-    @computed('width', 'height', 'margin')
+    @computed('owidth', 'oheight', 'margin')
     get bottomRightMatrix() {
-        const { width, height, margin } = this;
-        let xypoints = new Array(margin * 2);
-
-        for(var iy = 0; iy < margin; iy++) {
-            for(var ix = 0; ix < margin; ix++) {
-                xypoints[ix + (iy * margin)] = [(width - margin  + ix), (height - margin + iy)]
-            }
-        }
-
-        return xypoints;
+        return bottomRight({ width: this.owidth, height: this.oheight, margin: this.margin });
     }
 
-    @computed('y', 'width', 'height', 'margin')
+    @computed('owidth', 'oheight', 'margin')
     get rightMatrix() {
-        const { y, width, height, margin } = this;
-
-        if (height <= margin) {
-            return []
-        }
-
-        //1 = start
-        //n = end
-        //r = range
-        let y1 = height > margin * 2 ? y + margin : y
-        let yn = height - margin;
-        let yr = yn - y1;
-
-        let xypoints = new Array(yr * margin);
-
-        for(var iy = 0; iy < yr; iy++) {
-            for(var ix = 0; ix < margin; ix++) {
-                xypoints[ix + (iy * margin)] = [(width - margin  + ix), (y1 + iy)];
-            }
-        }
-
-        return xypoints;
+        return right({ width: this.owidth, height: this.oheight, margin: this.margin });
     }
 
-    @computed('x', 'width', 'height', 'margin')
+    @computed('owidth', 'oheight', 'margin')
     get bottomMatrix() {
-        const { x, width, height, margin } = this;
-
-        if (width <= margin) {
-            return []
-        }
-
-        //1 = start
-        //n = end
-        //r = range
-        let x1 = width > margin * 2 ? x + margin : x
-        let xn = width - margin;
-        let xr = xn - x1;
-
-        let xypoints = new Array(xr * margin);
-
-        for(var iy = 0; iy < margin; iy++) {
-            for(var ix = 0; ix < xr; ix++) {
-                xypoints[ix + (iy * margin)] = [(x1 + ix), (height - margin + iy)];
-            }
-        }
-
-        return xypoints;
+        return bottom({ width: this.owidth, height: this.oheight, margin: this.margin });
     }
 
-    @computed('x', 'y', 'width', 'height', 'margin')
+    @computed('owidth', 'oheight', 'margin')
+    get topRightMatrix() {
+        return topRight({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
+
+    @computed('owidth', 'oheight', 'margin')
+    get bottomLeftMatrix() {
+        return bottomLeft({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
+
+    @computed('owidth', 'oheight', 'margin')
     get bodyMatrix() {
-        const { x, y, width, height, margin } = this;
+        return body({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
 
-        if (width <= margin || height <= margin) {
-            return []
+    @computed('owidth', 'oheight', 'margin')
+    get topMatrix() {
+        return top({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
+
+    @computed('owidth', 'oheight', 'margin')
+    get leftMatrix() {
+        return left({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
+
+    @computed('owidth', 'oheight', 'margin')
+    get topLeftMatrix() {
+        return topLeft({ width: this.owidth, height: this.oheight, margin: this.margin });
+    }
+
+    setZone(x, y) {
+        if (this._xyInMatrix(x, y, this.bodyMatrix)) {
+            return this.zone = 'body';
+        } else if (this._xyInMatrix(x, y, this.bottomRightMatrix)) {
+            return this.zone = 'bottomRight';
+        } else if (this._xyInMatrix(x, y, this.rightMatrix)){
+            return this.zone = 'right'
+        } else if (this._xyInMatrix(x, y, this.bottomMatrix)){
+            return this.zone = 'bottom'
+        } else if (this._xyInMatrix(x, y, this.topRightMatrix)){
+            return this.zone = 'topRight'
+        } else if (this._xyInMatrix(x, y, this.bottomLeftMatrix)){
+            return this.zone = 'bottomLeft'
+        } else if (this._xyInMatrix(x, y, this.leftMatrix)){
+            return this.zone = 'left'
+        } else if (this._xyInMatrix(x, y, this.topMatrix)){
+            return this.zone = 'top'
+        } else if (this._xyInMatrix(x, y, this.topLeftMatrix)){
+            return this.zone = 'topLeft'
+        } else {
+            return this.zone = 'unknown'
         }
-
-        //1 = start
-        //n = end
-        //r = range
-        let x1 = width > margin * 2 ? x + margin : x
-        let xn = width - margin;
-        let xr = xn - x1;
-        let y1 = height > margin * 2 ? y + margin : y
-        let yn = height - margin;
-        let yr = yn - y1;
-
-        let xypoints = new Array(xr * yr);
-
-        for(var iy = 0; iy < yr; iy++) {
-            for(var ix = 0; ix < xr; ix++) {
-                xypoints[ix + (iy * xr)] = [(x1 + ix), (y1 + iy)];
-            }
+    }
+    
+    _xyInMatrix(x, y, matrix) {
+        if (matrix &&
+            (x >= matrix[0][0] && x <= matrix[1][0]) &&
+            (y >= matrix[0][1] && y <= matrix[1][1])) {
+                return true
         }
-
-        return xypoints;
+        return false
     }
 
     @action
     render(element) {
-        this.element = element;
-        if (!this.args.ghost) {
-            this.ox = element.offsetLeft;
-            this.oy = element.offsetTop;
-            this.x = element.offsetLeft;
-            this.y = element.offsetTop;
-            this.width = element.offsetWidth;
-            this.height = element.offsetHeight;
+        if(!this.element) {
+            this.element = element;
         }
+
+        this.ox = this.element.offsetLeft;
+        this.oy = this.element.offsetTop;
+        this.owidth = this.element.offsetWidth;
+        this.oheight = this.element.offsetHeight;
     }
 
     @action
@@ -165,7 +191,78 @@ export default class DocumentInteractiveFieldComponent extends Component {
     }
 
     @action
-    mousemove() {
+    mousedown(event) {
+        if (event.button == 0 && !this.isDrawing) {
+            this._captureRender()
+            const { zone } = this;
 
+            if(zone == 'body') {
+                this.isDrawing = 'move'
+            } else {
+                this.isDrawing = zone;
+            }
+
+        } else if (event.button == 0 && this.isDrawing) {
+            this.isDrawing = null;
+            this.args.onTransform(
+                this.args.field,
+                (this.x - this.ox),
+                (this.y - this.oy),
+                (this.width - this.owidth),
+                (this.height - this.oheight)
+            );
+            this._releaseRender();
+        } else if  (event.button == 2 && this.isDrawing) {
+            this.isDrawing = null;
+            this._releaseRender();
+            event.preventDefault();
+        }
+    }
+
+    _captureRender() {
+        this.x = this.ox;
+        this.y = this.oy;
+        this.width = this.owidth;
+        this.height = this.oheight;
+    }
+
+    _releaseRender() {
+        this.x = null;
+        this.y = null;
+        this.width = null;
+        this.height = null;
+    }
+
+    @action
+    mousemove(event) {
+        this.setZone(event.offsetX, event.offsetY);
+        if (this.isDrawing == 'move') {
+            // const x = this.x + event.movementX
+            // const y = this.y + event.movementY
+            // this.x = x > 0 ? x : 0;
+            // this.y = y > 0 ? y : 0;
+            var target = event.target
+            // keep the dragged position in the data-x/data-y attributes
+            var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.movementX
+            var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.movementY
+
+            // translate the element
+            target.style.webkitTransform =
+                target.style.transform =
+                'translate(' + x + 'px, ' + y + 'px)'
+
+            // update the posiion attributes
+            target.setAttribute('data-x', x)
+            target.setAttribute('data-y', y)
+
+        } else if (this.isDrawing == 'right') {
+            const width = this.width + event.movementX;
+            this.width = width >= this.minWidth ? width : this.minWidth;
+        }
+    }
+
+    @action
+    contextmenu(event) {
+        event.preventDefault();
     }
 }

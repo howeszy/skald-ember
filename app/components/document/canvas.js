@@ -26,4 +26,9 @@ export default class DocumentCanvasComponent extends Component {
     unsetWrapper() {
         this.wrapper = undefined;
     }
+
+    @action
+    contextmenu(event) {
+        event.preventDefault();
+    }
 }

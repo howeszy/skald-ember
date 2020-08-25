@@ -1,4 +1,6 @@
-<div class="document {{if @isAdding 'drawing'}}" style="{{this.style}}" >
+<div class="document {{if @isAdding 'drawing'}}" 
+     style="{{this.style}}" 
+     {{on 'contextmenu' this.contextmenu}}>
     {{#each @fields as |field|}}
         {{#unless field.pending}}
             <Document::InteractiveField @field={{field}}

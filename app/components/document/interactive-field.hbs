@@ -1,1 +1,9 @@
-{{yield}}
+<div class="field signer-{{@field.order}} {{if @field.focused 'focus'}}"
+     style="{{this.style}}"
+     {{on 'contextmenu' this.contextmenu}}
+     {{on 'mousedown' this.mousedown}}
+     {{on 'mousemove' this.mousemove}}
+     {{did-insert this.render}}
+     {{did-update this.rerender @field.x @field.y @field.width @field.height}}
+     {{will-destroy this.teardown}}>
+</div>
