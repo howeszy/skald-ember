@@ -104,10 +104,12 @@ $signer-colors:
   7 "pink";
 
 .field {
+  display: block;
   position: absolute;
   touch-action: none;
   border: 1px solid color("blue-grey", "base");
   background-color: #{color("blue-grey", "lighten-3")}44;
+  margin: 0;
 
   @each $order, $color in $signer-colors  {
     &.signer-#{$order} {

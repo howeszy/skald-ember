@@ -1,7 +1,8 @@
 <div id="element-navigation" class="open z-depth-2">
-    <select class="input-field"
-            {{on 'change' this.setView}}
-            {{did-insert this.setupSelect}}>
+    <select
+        class="input-field"
+        {{on 'change' this.setView}}
+        {{did-insert this.setupSelect}}>
       <option value="fit">Fit Width</option>
       <option value={{75}}>75 %</option>
       <option value={{100}}>100 %</option>
@@ -9,13 +10,14 @@
       <option value={{200}}>200 %</option>
     </select>
 
-    <button {{on 'click' this.toggleIsAdding}}>Toggle</button>
+    <button type="button" {{on 'click' this.toggleIsAdding}}>Toggle</button>
 </div>
 
-<Document::Viewport @document={{@document}}
-                    @fields={{this.fields}}
-                    @view={{this.view}}
-                    @isAdding={{this.isAdding}}
-                    @onCommit={{this.commit}}
-                    @onFocus={{this.focus}}
-                    @onTransform={{this.transform}} />
+<Document::Viewport 
+    @document={{@document}}
+    @fields={{this.fields}}
+    @view={{this.view}}
+    @isAdding={{this.isAdding}}
+    @onCommit={{this.commit}}
+    @onFocus={{this.focus}}
+    @onTransform={{this.transform}} />

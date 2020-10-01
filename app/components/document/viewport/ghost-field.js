@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object';
 
-export default class DocumentGhostFieldComponent extends Component {
+export default class DocumentViewportGhostFieldComponent extends Component {
     isDrawing = false;
     ox = 0;
     oy = 0;

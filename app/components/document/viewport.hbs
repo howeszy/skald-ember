@@ -1,9 +1,10 @@
 <div id="document-viewport" {{did-insert this.setElement}}>
-    <Document::Canvas @zoom={{this.zoom}}
-                      @document={{@document}}
-                      @fields={{@fields}}
-                      @isAdding={{@isAdding}}
-                      @onFocus={{@onFocus}}
-                      @onCommit={{@onCommit}}
-                      @onTransform={{this.transform}} />
+	<Document::Viewport::Canvas 
+      @zoom={{this.zoom}}
+      @document={{@document}}
+      @fields={{@fields}}
+      @isAdding={{@isAdding}}
+      @onFocus={{@onFocus}}
+      @onCommit={{@onCommit}}
+      @onTransform={{this.transform}} />
 </div>

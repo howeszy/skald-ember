@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';
 import { tracked } from '@glimmer/tracking';
 
-export default class DocumentCanvasComponent extends Component {
+export default class DocumentViewportCanvasComponent extends Component {
     @tracked wrapper;
 
     get style() {
