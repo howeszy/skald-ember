@@ -19,7 +19,8 @@ export default class DocumentViewportInteractiveFieldComponent extends Component
       left: ${this.args.field.x}%;
       top: ${this.args.field.y}%;
       height: ${this.args.field.height}%;
-      width: ${this.args.field.width}%
+      width: ${this.args.field.width}%;
+      font-size: ${this.args.field.fontSize / 10}em;
     `);
   }
 

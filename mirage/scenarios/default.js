@@ -12,10 +12,13 @@ export default function(server) {
   });
 
   server.create('field', {
+    name: 'Full Name',
     signer: signer,
     document: document,
     value: 'Dr. Terry Michael Smith III',
-    type: 'single-line',
+    type: 'single',
+    fontFamily: 'times',
+    fontSize: 15,
     height: 2,
     width: 71.82353,
     x: 17.17647,

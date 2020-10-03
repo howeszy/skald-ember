@@ -1,0 +1,13 @@
+<div class="input-field" ...attributes>
+  <input
+      id={{this.inputId}}
+      placeholder={{@placeholder}}
+      type="{{this.type}}"
+      class="validate"
+      value={{@value}}
+      {{on "change" this.change}}
+      {{on "input" this.input}}
+      {{did-insert this.setup}}
+      {{will-destroy this.teardown}}>
+  <label for={{this.inputId}}>{{@label}}</label>
+</div>

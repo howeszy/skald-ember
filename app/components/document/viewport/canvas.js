@@ -8,12 +8,13 @@ export default class DocumentViewportCanvasComponent extends Component {
 
     get style() {
         const { zoom, document } = this.args;
-        const { width, height, src } = document;
+        const { width, height, src } = document; 
 
         return htmlSafe(`
             width: ${width * zoom}px;
             height: ${height * zoom}px;
-            background-image: url(${src})
+            font-size: ${10 * zoom}pt;
+            background-image: url(${src});
         `);
     }
 

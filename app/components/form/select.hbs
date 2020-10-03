@@ -1,0 +1,21 @@
+<div class="input-field" ...attributes>
+  <select
+      id={{this.inputId}}
+      {{on "change" this.change}}
+      {{did-insert this.setup}}
+      {{will-destroy this.teardown}}>
+
+    {{#if @placeholder}}
+      <option
+          data-use="placeholder"
+          value={{null}}
+          disabled
+          selected>
+        {{@placeholder}}
+      </option>
+    {{/if}}
+
+    {{yield}}
+  </select>
+  <label for={{this.inputId}}>{{@label}}</label>
+</div>

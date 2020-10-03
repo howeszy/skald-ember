@@ -1,0 +1,44 @@
+<div class="row">
+  <Form::Select
+      class="col s12"
+      @value={{@field.type}}
+      @label="Type"
+      @onChange={{set @field.type}}>
+    <option value="single" selected>Single Line</option>
+    <option value="multi">Multi Line</option>
+    <option value="checkbox">Checkbox</option>
+    <option value="date">Date</option>
+    <option value="esign-signature">Signature</option>
+    <option value="esign-initials">Initials</option>
+    <option value="esign-date">Date Signed</option>
+  </Form::Select>
+
+  <Form::Input
+      class="col s12"
+      @label="Name"
+      @value={{@field.name}}
+      @onInput={{set @field.name}}/>
+
+  <Form::Select
+      class="col s12"
+      @value={{@field.fontFamily}}
+      @label="Font"
+      @onChange={{set @field.fontFamily}}>
+    <option value="times" selected>Times</option>
+    <option value="helvetica">Helvetica</option>
+    <option value="courier">Courier</option>
+  </Form::Select>
+
+  <Form::Input
+      class="col s12"
+      @type="number"
+      @label="Font Size"
+      @value={{@field.fontSize}}
+      @onInput={{set @field.fontSize}}/>
+
+  <Form::Checkbox
+      class="col s12"
+      @value={{@field.required}}
+      @label="Required"
+      @onChange={{set @field.required}}/>
+</div>

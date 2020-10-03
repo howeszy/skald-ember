@@ -1,10 +1,13 @@
 <dialog
     {{!-- template-lint-disable no-inline-styles style-concatenation --}}
-    class="field signer-{{@field.order}} {{if @field.focused 'focus'}}"
+    class="field {{@field.fontFamily}} signer-{{@field.order}} {{if @field.focused 'focus'}}"
     style="{{this.style}}"
     {{on "mousedown" this.mousedown}}
     {{on "mouseup" this.mouseup}}
     {{did-insert this.setup}}
     {{will-destroy this.teardown}}>
-  {{component (concat 'document/viewport/interactive-field/' this.type) value=@field.value}}
+  {{component 
+      (concat 'document/viewport/interactive-field/' this.type) 
+      value=@field.value
+      name=@field.name}}
 </dialog>

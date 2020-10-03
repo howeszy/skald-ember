@@ -56,12 +56,17 @@ html {
   scrollbar-width: none;  /* Firefox */
 } 
 
+hr {
+  border: none;
+  border-top: 1px solid #9e9e9e;
+}
+
 #header-navigation {
   position: relative;
   z-index: 19;
 }
 
-#element-navigation {
+.document-navigation {
   padding-top: $navbar-height;
   height: calc(100vh);
   position: fixed;
@@ -70,6 +75,12 @@ html {
   left: 0;
   overflow-x: hidden;
   width: 200px;
+
+  .document-navigation--header {
+    padding: 5px 0;
+    margin-bottom: 5px;
+    text-align: center;
+  }
 }
 
 #document-viewport {
@@ -110,11 +121,26 @@ $signer-colors:
   border: 1px solid color("blue-grey", "base");
   background-color: #{color("blue-grey", "lighten-3")}44;
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  &.times {
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+  &.helvetica {
+    font-family: Helvetica, sans-serif;
+  }
+
+  &.courier {
+    font-family: 'Courier New', Courier, monospace;
+  }
 
   @each $order, $color in $signer-colors  {
     &.signer-#{$order} {
       border: 1px solid color($color, "base");
       background-color: #{color($color, "lighten-3")}44;
+      color: color($color, "darken-1");
     }
   }
 

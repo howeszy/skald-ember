@@ -3,33 +3,40 @@ import { tracked } from '@glimmer/tracking';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class FieldModel extends Model {
-    @attr name;
-    @attr('number', { defaultValue: 0 }) x;
-    @attr('number', { defaultValue: 0 }) y;
-    @attr('number', { defaultValue: 0 }) height;
-    @attr('number', { defaultValue: 0 }) width;
-    @attr value;
-    @attr type;
+  //Meta Information
+  @attr('number', {defaultValue: 12}) fontSize;
+  @attr('string', {defaultValue: 'times'}) fontFamily ;
+  @attr('number', {defaultValue: 0}) height;
+  @attr name;
+  @attr('boolean', {defaultValue: false}) required;
+  @attr('string', {defaultValue: 'single'}) type;
+  @attr('number', {defaultValue: 0}) width;
+  @attr('number', {defaultValue: 0}) x;
+  @attr('number', {defaultValue: 0}) y;
 
-    @tracked pending;
-    @tracked focused;
-    guid;
+  //Additional Information
+  @attr value;
 
-    get order() {
-        return this.signer.get('order');
-    }
+  //App Information
+  @tracked pending;
+  @tracked focused;
+  guid;
 
-    set pending(bool) {
-        this.pending = bool;
-    }
+  get order() {
+    return this.signer.get('order');
+  }
 
-    constructor(args) {
-        super(args)
+  set pending(bool) {
+    this.pending = bool;
+  }
 
-        this.pending = false;
-        this.guid = uuidv4();
-    }
+  constructor(args) {
+    super(args)
 
-    @belongsTo('document') document;
-    @belongsTo('signer') signer;
+    this.pending = false;
+    this.guid = uuidv4();
+  }
+
+  @belongsTo('document') document;
+  @belongsTo('signer') signer;
 }

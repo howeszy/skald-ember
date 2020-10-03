@@ -1,0 +1,12 @@
+<div ...attributes>
+  <label for={{this.inputId}}>
+    <input
+        id={{this.inputId}}
+        type="checkbox"
+        class="filled-in"
+        {{did-insert this.setup}}
+        {{will-destroy this.teardown}}
+        {{on 'change' this.change}}/>
+    <span>{{@label}}</span>
+  </label>
+</div>
