@@ -2,10 +2,12 @@
     {{!-- template-lint-disable no-inline-styles style-concatenation --}}
     class="field {{@field.fontFamily}} signer-{{@field.order}} {{if @field.focused 'focus'}}"
     style="{{this.style}}"
-    {{on "mousedown" this.mousedown}}
-    {{on "mouseup" this.mouseup}}
-    {{did-insert this.setup}}
-    {{will-destroy this.teardown}}>
+    {{on 'contextmenu' this.mouseevent}}
+    {{on 'mouseup' this.mouseevent}}
+    {{on 'mousedown' this.mouseevent}}
+    {{on 'mousemove' this.mouseevent}}
+    {{did-insert this.setup}}>
+
   {{component 
       (concat 'document/viewport/interactive-field/' this.type) 
       value=@field.value

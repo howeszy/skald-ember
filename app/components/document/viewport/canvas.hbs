@@ -1,15 +1,20 @@
-<div class="document {{if @isAdding 'drawing'}}" style="{{this.style}}" >
-  {{#each @fields as |field|}}
+<div
+    class="document"
+    style="{{this.style}}"
+    {{did-insert this.setup}}
+    {{on "mousemove" this.mouseevent}}
+    {{on "mouseup" this.mouseevent}}
+    {{on "mousedown" this.mouseevent}}
+    {{on "wheel" this.wheel}}>
+  {{#each @document.fields as |field|}}
     {{#unless field.pending}}
       <Document::Viewport::InteractiveField 
           @field={{field}}
-          @isActive={{not @isAdding}}
-          @onFocus={{@onFocus}}
-          @onTransform={{@onTransform}}/>
+          @onInteraction={{this.interaction}}/>
     {{/unless}}
   {{/each}}
 
-  {{#if @isAdding}}
+  {{!-- {{#if @isAdding}}
     <div class="new-field-wrapper"
         {{did-insert this.setWrapper}}
         {{will-destroy this.unsetWrapper}} >
@@ -27,5 +32,5 @@
         {{/each}}
       {{/if}}
     </div>
-  {{/if}}
+  {{/if}} --}}
 </div>

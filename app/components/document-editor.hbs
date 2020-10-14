@@ -14,39 +14,24 @@
     </Form::Select>
 
     <div class="col s12 center-align">
-      <Form::Button @icon="add_circle_outline" @onClick={{this.toggleIsAdding}}>
+      {{!-- <Form::Button @icon="add_circle_outline" @onClick={{this.toggleIsAdding}}>
         {{#if this.isAdding}}
           Adding
         {{else}}
           Add Field
         {{/if}}
-      </Form::Button>
+      </Form::Button> --}}
     </div>
   </div>
 
-  <hr>
+  {{#if this.focused}}
+    <hr>
 
-  {{#if (gt this.focused.length 0)}}
-
-    {{#if (eq this.focused.length 1)}}
-      <div class="document-navigation--header">Field</div>
-      {{#each this.focused as |field|}}
-        <Document::Navigation::FieldMetadata @field={{field}} />
-      {{/each}}
-
-    {{else}}
-
-      <div class="document-navigation--header">Field</div>
-      multiple fields selected
-    {{/if}}
+    <div class="document-navigation--header">Field</div>
+    <Document::Navigation::FieldMetadata @field={{this.focused}} />
   {{/if}}
 </div>
 
 <Document::Viewport 
     @document={{@document}}
-    @fields={{this.fields}}
-    @view={{this.view}}
-    @isAdding={{this.isAdding}}
-    @onCommit={{this.commit}}
-    @onFocus={{this.focus}}
-    @onTransform={{this.transform}} />
+    @view={{this.view}} />
