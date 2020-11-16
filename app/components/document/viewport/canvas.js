@@ -134,9 +134,6 @@ export default class DocumentViewportCanvasComponent extends Component {
   }
 
   resize({movementX, movementY, layerX, layerY}, field, element, zone) {
-    console.log('----------------------------------');
-    console.log(movementX, layerX);
-
     if (zone.x >= 0) {
       if (zone.x > 0) {
         movementX = (layerX - element.offsetWidth)
@@ -159,21 +156,34 @@ export default class DocumentViewportCanvasComponent extends Component {
       if ((element.offsetWidth - movementX) < 5) {
         movementX = element.offsetWidth > 5 ? element.offsetWidth - 5 : 0;
       }
-      console.log('==')
-      console.log(field.width, element.offsetWidth, movementX, element.offsetParent.offsetWidth, (element.offsetWidth - movementX))
       field.width = ((element.offsetWidth - movementX) / element.offsetParent.offsetWidth) * 100;
-      console.log(field.width)
-      console.log('==')
     }
 
+    if (zone.y >= 0) {
+      if (zone.y > 0) {
+        movementY = (layerY - element.offsetHeight)
 
-    movementY = 0;
-    layerY = 0;
+        // set minimum size here
+        if ((element.offsetHeight + movementY) < 5) {
+          movementY = element.offsetHeight > 5 ? 5 - element.offsetHeight : 0;
+        }
+        
+        field.height = ((element.offsetHeight + movementY) / element.offsetParent.offsetHeight) * 100;
+      }
+
+      //setup for drag event
+      movementY = 0;
+      layerY = 0;
+    } else if (zone.y < 0) {
+        movementY = layerY
+
+        // set minimum size here
+      if ((element.offsetHeight - movementY) < 5) {
+        movementY = element.offsetHeight > 5 ? element.offsetHeight - 5 : 0;
+      }
+      field.height = ((element.offsetHeight - movementY) / element.offsetParent.offsetHeight) * 100;
+    }
     
-    console.log(movementX, layerX);
-    console.log('----------------------------------');
-
-
     this.drag(
       {
         movementX, 

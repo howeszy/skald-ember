@@ -18,8 +18,7 @@ import {
 
 export default class DocumentViewportInteractiveFieldComponent extends Component {
   @tracked zone;
-
-  element;
+  @tracked element;
 
   get type() {
     return this.args.field.type || 'single-line';
@@ -111,7 +110,7 @@ export default class DocumentViewportInteractiveFieldComponent extends Component
   }
 
   setZone(x, y) {
-    const canAdjustHeight = this.args.field.type != 'single'
+    const canAdjustHeight = true //this.args.field.type != 'single'
 
     if (canAdjustHeight) {
       if (this._xyInMatrix(x, y, this.bottomRightMatrix)) {
@@ -156,6 +155,7 @@ export default class DocumentViewportInteractiveFieldComponent extends Component
       this.element,
       this.zone 
     )
+    this.setup(this.element); //reset the element's tracking
   }
 
   @action
