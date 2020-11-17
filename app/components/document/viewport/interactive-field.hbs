@@ -1,15 +1,19 @@
+<div 
+    {{!-- template-lint-disable no-inline-styles style-concatenation --}}
+    class="field--value {{@field.fontFamily}}"
+    style="{{this.style}}">
+  {{component 
+      (concat 'document/viewport/interactive-field/' this.type) 
+      value=@field.value
+      name=@field.name}}
+</div>
 <dialog
     {{!-- template-lint-disable no-inline-styles style-concatenation --}}
-    class="field {{@field.fontFamily}} signer-{{@field.order}} {{if @field.focused 'focus'}}"
+    class="field signer-{{@field.order}} {{if @field.focused 'focus'}}"
     style="{{this.style}}"
     {{on 'contextmenu' this.mouseevent}}
     {{on 'mouseup' this.mouseevent}}
     {{on 'mousedown' this.mouseevent}}
     {{on 'mousemove' this.mouseevent}}
     {{did-insert this.setup}}>
-
-  {{component 
-      (concat 'document/viewport/interactive-field/' this.type) 
-      value=@field.value
-      name=@field.name}}
 </dialog>

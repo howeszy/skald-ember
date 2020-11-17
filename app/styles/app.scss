@@ -119,22 +119,10 @@ $signer-colors:
   position: absolute;
   touch-action: none;
   border: 1px solid color("blue-grey", "base");
-  background-color: #{color("blue-grey", "lighten-3")}44;
+  background-color: #{color("blue-grey", "lighten-3")}22;
   margin: 0;
   padding: 0;
   overflow: hidden;
-
-  &.times {
-    font-family: 'Times New Roman', Times, serif;
-  }
-
-  &.helvetica {
-    font-family: Helvetica, sans-serif;
-  }
-
-  &.courier {
-    font-family: 'Courier New', Courier, monospace;
-  }
 
   @each $order, $color in $signer-colors  {
     &.signer-#{$order} {
@@ -146,6 +134,33 @@ $signer-colors:
 
   &.focus {
     border-width: 3px;
+  }
+}
+
+.field--value {
+  display: block;
+  position: absolute;
+  touch-action: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+
+  &.times {
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+  &.helvetica {
+    font-family: Helvetica, sans-serif;
+  }
+
+  &.courier {
+    font-family: 'Courier New', Courier, monospace;
   }
 }
 
