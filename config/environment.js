@@ -2,7 +2,7 @@
 
 module.exports = function(environment) {
   let ENV = {
-    modulePrefix: 'skald',
+    modulePrefix: 'epdf',
     environment,
     rootURL: '/',
     locationType: 'auto',

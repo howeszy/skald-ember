@@ -1,4 +1,4 @@
-import pointPixel from 'skald/utils/point-pixel';
+import pointPixel from 'epdf/utils/point-pixel';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | point-pixel', function() {
